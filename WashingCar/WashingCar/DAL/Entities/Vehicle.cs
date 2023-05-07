@@ -18,5 +18,6 @@ namespace WashingCar.DAL.Entities
         public Services Services { get; set; }
 
         public ICollection<VehicleDetails> VehicleDetails{ get; set; }
+
     }
 }
