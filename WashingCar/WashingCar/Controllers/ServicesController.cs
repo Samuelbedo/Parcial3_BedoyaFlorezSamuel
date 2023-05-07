@@ -21,7 +21,23 @@ namespace WashingCar.Controllers
             _context = context;
         }
 
-        // GET: Services
+        private async Task<Services> GetServiceById(Guid? serviceId)
+        {
+            return await _context.Services
+                .Include(c => c.Vehicles)
+                .ThenInclude(s => s.VehicleDetails)
+                .FirstOrDefaultAsync(c => c.Id == serviceId);
+        }
+
+        private async Task<Vehicle> GetVehicleById(Guid? vehicleId)
+        {
+            return await _context.Vehicles
+                .Include(s => s.Services)
+                .Include(c => c.VehicleDetails)
+                .FirstOrDefaultAsync(c => c.Id == vehicleId);
+        }
+
+
         public async Task<IActionResult> Index()
         {
               return _context.Services != null ? 
@@ -29,7 +45,6 @@ namespace WashingCar.Controllers
                           Problem("Entity set 'DataBaseContext.Services'  is null.");
         }
 
-        // GET: Services/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null || _context.Services == null)
@@ -47,7 +62,6 @@ namespace WashingCar.Controllers
             return View(services);
         }
 
-        // GET: Services/Create
         public IActionResult Create()
         {
             return View();
@@ -84,7 +98,7 @@ namespace WashingCar.Controllers
         {
             if (servicesId == null) return NotFound();
 
-            Services services = await _context.Services.FindAsync(servicesId);
+            Services services = await GetServiceById(servicesId);
 
             if (services == null) return NotFound();
 
@@ -95,5 +109,45 @@ namespace WashingCar.Controllers
 
             return View(vehicleViweModel);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddVehicle(VehicleViewModel vehicleViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    Vehicle vehicle = new Vehicle()
+                    {
+                        VehicleDetails = new List<VehicleDetails>(),
+                        Services = await GetServiceById(vehicleViewModel.ServicesId),
+                        Owner = vehicleViewModel.Owner,
+                        NumberPlate = vehicleViewModel.NumberPlate,
+                    };
+
+                    _context.Add(vehicle);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Details), new { vehicleViewModel.ServicesId });
+                }
+                //catch (DbUpdateException dbUpdateException)
+                //{
+                //    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
+                //    {
+                //        ModelState.AddModelError(string.Empty, "Ya existe un Dpto/Estado con el mismo nombre en este país.");
+                //    }
+                //    else
+                //    {
+                //        ModelState.AddModelError(string.Empty, dbUpdateException.InnerException.Message);
+                //    }
+                //}
+                catch (Exception exception)
+                {
+                    ModelState.AddModelError(string.Empty, exception.Message);
+                }
+            }
+            return View(vehicleViewModel);
+        }
+
     }
 }

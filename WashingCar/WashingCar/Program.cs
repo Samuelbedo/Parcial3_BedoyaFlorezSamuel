@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using WashingCar.DAL;
+using WashingCar.Helpers;
+using WashingCar.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +11,7 @@ builder.Services.AddDbContext<DataBaseContext>(o =>
 });
 
 builder.Services.AddTransient<SeederDb>();
+builder.Services.AddScoped<IDropDownListsHelper, DropDownListsHepler>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
