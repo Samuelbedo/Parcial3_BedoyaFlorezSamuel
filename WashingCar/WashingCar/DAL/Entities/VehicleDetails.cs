@@ -10,5 +10,7 @@ namespace WashingCar.DAL.Entities
 
         [Display(Name = "Fecha de Entrega del Vehiculo")]
         public DateTime DeliveryDate { get; set; }
+
+        public Vehicle Vehicle { get; set; }
     }
 }

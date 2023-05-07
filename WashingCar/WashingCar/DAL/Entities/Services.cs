@@ -12,5 +12,7 @@ namespace WashingCar.DAL.Entities
         [Display(Name = "Precio del Servicio")]
         [Required(ErrorMessage = "El campo {0} es oblilgatorio.")]
         public float Price { get; set; }
+
+        public ICollection<Vehicle> Vehicles { get; set; }
     }
 }

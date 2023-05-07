@@ -14,5 +14,9 @@ namespace WashingCar.DAL.Entities
         [MaxLength(6, ErrorMessage = "El campo {0} debe ser de {1} caracteres.")]
         [Required(ErrorMessage = "El campo {0} es oblilgatorio.")]
         public string NumberPlate { get; set; }
+
+        public Services Services { get; set; }
+
+        public ICollection<VehicleDetails> VehicleDetails{ get; set; }
     }
 }
